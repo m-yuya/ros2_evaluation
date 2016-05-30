@@ -157,7 +157,7 @@ int main(int argc, char * argv[])
   while (rclcpp::ok()) {
     eval_ros2("./evaluation/byte_data/data_128Kbyte.txt", "./evaluation/publish_time/publish_time_byte.txt", chatter_pub);
     if(count == -1){
-      printf("break\n");
+      printf("end this data size evaluation \n");
       break;
     }
     // ros::spinOnce();
