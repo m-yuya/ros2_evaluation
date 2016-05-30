@@ -6,14 +6,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory>
-#include <iostream>				// file io
-#include <unistd.h>				// clock
-#include <time.h>				// clock
-#include <sys/mman.h>			// mlock
-#include <sched.h>				// sched
+#include <iostream>		// file io
+#include <unistd.h>		// clock
+#include <time.h>		// clock
+#include <sys/mman.h>		// mlock
+#include <sched.h>		// sched
 
 #define EVAL_NUM 120
-#define IS_RELIABLE_QOS 0			// 1 means "reliable"", 0 means "best effort""
+#define IS_RELIABLE_QOS 0 // 1 means "reliable"", 0 means "best effort""
 
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_256byte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_512byte.txt";
@@ -30,7 +30,6 @@
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_1Mbyte.txt";
 std::string output_filename = "./evaluation/subscribe_time/subscribe_time_2Mbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_4Mbyte.txt";
-
 
 static const rmw_qos_profile_t rmw_qos_profile_reliable = {
   RMW_QOS_POLICY_KEEP_ALL_HISTORY,
@@ -49,11 +48,9 @@ static const rmw_qos_profile_t rmw_qos_profile_best_effort = {
 int i, count = -1, init_num_int;
 double  subscribe_time[EVAL_NUM];
 
-struct timespec tp1;			// for clock
+struct timespec tp1;		// for clock
 
-FILE *fp;						// for file io
-
-int eval_loop_count = 0;
+FILE *fp;			// for file io
 
 //void chatterCallback(const std_msgs::String::ConstPtr& msg)
 void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
@@ -68,7 +65,6 @@ void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
 
 	// printf("first recieved number: %d \n\n", count);
 	printf("message loss : %d \n", init_num_int);
-	printf("eval_loop %d \n", eval_loop_count);
    
   }
    
@@ -115,7 +111,7 @@ void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
 		}
 	  }
 
-	  printf("output data %d \n", eval_loop_count);
+	  // printf("output data %d \n", eval_loop_count);
 
 	  fclose(fp);
 	}else{
@@ -124,12 +120,9 @@ void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
 	
 	// 評価の初期化
 	count = -1;					// initilize for nexy date size
-	eval_loop_count++;
 	
-	if( eval_loop_count == 1){
-	  // 評価の終了
-	  count == EVAL_NUM;
-	}
+	// 評価の終了
+	count == EVAL_NUM;
 	
   }
 }
@@ -160,9 +153,10 @@ int main(int argc, char * argv[])
 	custom_qos_profile = rmw_qos_profile_best_effort;
   }
   
+  auto sub = node->create_subscription<std_msgs::msg::String>("chatter", chatterCallback, custom_qos_profile);
   //   ros::Subscriber sub = n.subscribe("chatter", 1000, chatterCallback);
   //  auto sub = node->create_subscription<std_msgs::msg::String>("chatter", chatterCallback, rmw_qos_profile_default);  
-  auto sub = node->create_subscription<std_msgs::msg::String>("chatter", chatterCallback, custom_qos_profile);
+
  
   printf("start evaluation\n");
 

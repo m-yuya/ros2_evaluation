@@ -5,15 +5,15 @@
 
 #include <sstream>
 #include <fstream>
-#include <iostream>				// file io
+#include <iostream>		// file io
 #include <string>
 #include <stdio.h>
 
-#include <time.h>				// clock
-#include <unistd.h>				// clock
+#include <time.h>		// clock
+#include <unistd.h>		// clock
 
-#include <sys/mman.h>			// mlock
-#include <sched.h>				// sched
+#include <sys/mman.h>		// mlock
+#include <sched.h>		// sched
 
 #define EVAL_NUM 120
 #define PUBLISH_Hz 10
@@ -34,15 +34,16 @@ static const rmw_qos_profile_t rmw_qos_profile_best_effort = {
 };
 
 struct timespec tp1;
-int i, count = -1;
+int i, count = -1;		// count is current evaluation number (< EVAL_NUM)
 double publish_time[EVAL_NUM];
 
 std::string s, bytedata;
 
-FILE *fp;
+FILE *fp;			// for file io
 
 // file名を引数に取りフアイルの中身を返す関数
 std::string read_datafile(std::string message_filename){
+
   // data_*byte.txtからstd::string bytedataへデータを読み込み 
   
   std::ifstream ifs(message_filename.c_str());
@@ -82,7 +83,7 @@ int eval_ros2(std::string message_filename, std::string output_filename, rclcpp:
 	// printf("Time Span:\t%ld.%09ld\n", tp1.tv_sec, tp1.tv_nsec);
 
 	// chatter_pub.publish(msg);
-	chatter_pub->publish(msg);
+	chatter_pub->publish(msg); // publish message
   
   }
   else if(count == -1){
@@ -108,7 +109,7 @@ int eval_ros2(std::string message_filename, std::string output_filename, rclcpp:
 	  printf("error : can't output publish_time.txt");	
 	}
 	
-	count = -2;					// initilize for nexy date size
+	count = -2;					// initilize for next date size
 	
   }
   
@@ -121,11 +122,11 @@ int eval_ros2(std::string message_filename, std::string output_filename, rclcpp:
 // int main(int argc, char **argv)
 int main(int argc, char * argv[])
 {
-  mlockall(MCL_FUTURE);
+  mlockall(MCL_FUTURE);		// lock all cached memory into RAM and prevent future dynamic memory allocations
   
   usleep(1000);
   sched_param  pri = {94}; 
-  if (sched_setscheduler(0, SCHED_FIFO, &pri) == -1) {
+  if (sched_setscheduler(0, SCHED_FIFO, &pri) == -1) { // set FIFO scheduler
   	perror("sched_setattr");
   	exit(EXIT_FAILURE);
   }
@@ -151,215 +152,37 @@ int main(int argc, char * argv[])
   // ros::Rate loop_rate(10);
   rclcpp::rate::WallRate loop_rate(PUBLISH_Hz);
   
-  // printf("start evaluation 256byte \n");
-  // // while (ros::ok())
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_256byte.txt", "./evaluation/publish_time/publish_time_256byte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  // 	// ros::spinOnce();
-  //   rclcpp::spin_some(node);
-  // 	// loop_rate.sleep();
-  //   loop_rate.sleep();
-  // }
-  
-  // usleep(1000000);
-
-  // printf("start evaluation 512byte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_512byte.txt", "./evaluation/publish_time/publish_time_512byte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(1000000);
-
-  // printf("start evaluation 1Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_1Kbyte.txt", "./evaluation/publish_time/publish_time_1Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // printf("start evaluation 2Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_2Kbyte.txt", "./evaluation/publish_time/publish_time_2Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(1000000);
-  
-  // printf("start evaluation 4Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_4Kbyte.txt", "./evaluation/publish_time/publish_time_4Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(1000000);
-
-  // printf("start evaluation 8Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_8Kbyte.txt", "./evaluation/publish_time/publish_time_8Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(1000000);
-
-  // printf("start evaluation 16Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_16Kbyte.txt", "./evaluation/publish_time/publish_time_16Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(1000000);
-  
-  // printf("start evaluation 32Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_32Kbyte.txt", "./evaluation/publish_time/publish_time_32Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(5000000);
-  
-  // printf("start evaluation 64Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_64Kbyte.txt", "./evaluation/publish_time/publish_time_64Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(5000000);
-
-  // printf("start evaluation 128Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_128Kbyte.txt", "./evaluation/publish_time/publish_time_128Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(5000000);
-
-  // printf("start evaluation 256Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_256Kbyte.txt", "./evaluation/publish_time/publish_time_256Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(5000000);
-
-  // printf("start evaluation 512Kbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_512Kbyte.txt", "./evaluation/publish_time/publish_time_512Kbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-
-  // usleep(5000000);
-  
-  // printf("start evaluation 1Mbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_1Mbyte.txt", "./evaluation/publish_time/publish_time_1Mbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
-  
-  usleep(5000000);
-  
-  printf("start evaluation 2Mbyte \n");
+  printf("start evaluation *byte \n");
+  // while (ros::ok())
   while (rclcpp::ok()) {
-  	eval_ros2("./evaluation/byte_data/data_2Mbyte.txt", "./evaluation/publish_time/publish_time_2Mbyte.txt", chatter_pub);
-  	if(count == -1){
-  	  printf("break\n");
-  	  break;
-  	}
+    eval_ros2("./evaluation/byte_data/data_128Kbyte.txt", "./evaluation/publish_time/publish_time_byte.txt", chatter_pub);
+    if(count == -1){
+      printf("break\n");
+      break;
+    }
+    // ros::spinOnce();
     rclcpp::spin_some(node);
+    // loop_rate.sleep();
     loop_rate.sleep();
   }
-
-  // usleep(5000000);
   
-  // printf("start evaluation 4Mbyte \n");
-  // while (rclcpp::ok()) {
-  // 	eval_ros2("./evaluation/byte_data/data_4Mbyte.txt", "./evaluation/publish_time/publish_time_4Mbyte.txt", chatter_pub);
-  // 	if(count == -1){
-  // 	  printf("break\n");
-  // 	  break;
-  // 	}
-  //   rclcpp::spin_some(node);
-  //   loop_rate.sleep();
-  // }
+  usleep(1000000);
 
   // followthrough transactions
-  count = 0;
-  while (rclcpp::ok()) {
-	auto msg = std::make_shared<std_msgs::msg::String>();	
-	std::stringstream ss;
-	ss << count << "end";
-	msg->data = ss.str();
-	chatter_pub->publish(msg);
-	if( count++ == 100){
-	  printf("---end evaluation---\n");
-	  break;
-	}
-    rclcpp::spin_some(node);
-    loop_rate.sleep();
-  }
+  // count = 0;
+  // while (rclcpp::ok()) {
+  // 	auto msg = std::make_shared<std_msgs::msg::String>();	
+  // 	std::stringstream ss;
+  // 	ss << count << "end";
+  // 	msg->data = ss.str();
+  // 	chatter_pub->publish(msg);
+  // 	if( count++ == 100){
+  // 	  printf("---end evaluation---\n");
+  // 	  break;
+  // 	}
+  //   rclcpp::spin_some(node);
+  //   loop_rate.sleep();
+  // }
 
   return 0;
 }
