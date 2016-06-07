@@ -30,9 +30,9 @@ macro(targets)
   install(TARGETS
     chat_intraprocess${target_suffix}
     DESTINATION bin)
+
 endmacro()
 
 call_for_each_rmw_implementation(targets GENERATE_DEFAULT)
-
 
 ament_package()
