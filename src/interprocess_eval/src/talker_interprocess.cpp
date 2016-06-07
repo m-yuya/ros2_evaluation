@@ -17,11 +17,11 @@
 
 #define EVAL_NUM 120		   // evaluation number for each data size
 #define PUBLISH_Hz 10
-#define IS_RELIABLE_QOS 1 // 1 means "reliable"", 0 means "best effort""
+#define QoS_Policy 3 // 1 means "reliable", 0 means "best effort", 3 means "history"
 
 static const rmw_qos_profile_t rmw_qos_profile_reliable = {
   RMW_QOS_POLICY_KEEP_ALL_HISTORY,
-  5,
+  100,
   RMW_QOS_POLICY_RELIABLE,
   RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY
 };
@@ -31,6 +31,13 @@ static const rmw_qos_profile_t rmw_qos_profile_best_effort = {
   1,
   RMW_QOS_POLICY_BEST_EFFORT,
   RMW_QOS_POLICY_VOLATILE_DURABILITY
+};
+
+static const rmw_qos_profile_t rmw_qos_profile_history = {
+  RMW_QOS_POLICY_KEEP_LAST_HISTORY,
+  100,							// depth option for HISTORY
+  RMW_QOS_POLICY_RELIABLE,
+  RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY
 };
 
 struct timespec tp1;
@@ -140,10 +147,14 @@ int main(int argc, char * argv[])
   
   // QoS settings
   rmw_qos_profile_t custom_qos_profile;
-  if( IS_RELIABLE_QOS == 1){
+  if( QoS_Policy == 1){
 	custom_qos_profile = rmw_qos_profile_reliable;
-  }else{
+  }
+  else if( QoS_Policy == 2 ){
 	custom_qos_profile = rmw_qos_profile_best_effort;
+  }
+  else if( QoS_Policy == 3){
+	custom_qos_profile = rmw_qos_profile_history;
   }
   
   // ros::Publisher chatter_pub = n.advertise<std_msgs::String>("chatter", 1000);
@@ -166,7 +177,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
   
-  usleep(1000000);
+  usleep(5000000);
 
   printf("start evaluation 512byte \n");
   while (rclcpp::ok()) {
@@ -179,7 +190,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(1000000);
+  usleep(5000000);
 
   printf("start evaluation 1Kbyte \n");
   while (rclcpp::ok()) {
@@ -203,7 +214,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(1000000);
+  usleep(5000000);
   
   printf("start evaluation 4Kbyte \n");
   while (rclcpp::ok()) {
@@ -216,7 +227,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(1000000);
+  usleep(5000000);
 
   printf("start evaluation 8Kbyte \n");
   while (rclcpp::ok()) {
@@ -229,7 +240,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(1000000);
+  usleep(5000000);
 
   printf("start evaluation 16Kbyte \n");
   while (rclcpp::ok()) {
@@ -242,7 +253,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(1000000);
+  usleep(5000000);
   
   printf("start evaluation 32Kbyte \n");
   while (rclcpp::ok()) {
@@ -333,7 +344,7 @@ int main(int argc, char * argv[])
     loop_rate.sleep();
   }
 
-  usleep(5000000);
+  usleep(10000000);
   
   printf("start evaluation 4Mbyte \n");
   while (rclcpp::ok()) {
@@ -354,7 +365,7 @@ int main(int argc, char * argv[])
     ss << "end" << count;
     msg->data = ss.str();
     chatter_pub->publish(msg);
-    if( count++ == 100){
+    if(count++ == 100){
       printf("---end evaluation---\n");
       break;
     }

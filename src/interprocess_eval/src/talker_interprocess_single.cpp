@@ -15,9 +15,9 @@
 #include <sys/mman.h>		// mlock
 #include <sched.h>		// sched
 
-#define EVAL_NUM 120
+#define EVAL_NUM 1200
 #define PUBLISH_Hz 10
-#define IS_RELIABLE_QOS 0			// 1 means "reliable"", 0 means "best effort""
+#define IS_RELIABLE_QOS 1			// 1 means "reliable"", 0 means "best effort""
 
 static const rmw_qos_profile_t rmw_qos_profile_reliable = {
   RMW_QOS_POLICY_KEEP_ALL_HISTORY,
@@ -78,7 +78,7 @@ int eval_ros2(std::string message_filename, std::string output_filename, rclcpp:
 	publish_time[count] = (double)tp1.tv_sec + (double)tp1.tv_nsec/ (double)1000000000L;
 
 	// printf("%18.9lf\n",publish_time[count]);
-	// printf("publish_time[%2d]:\t%18.9lf\n", count, publish_time[count]);
+	printf("publish_time[%2d]:\t%18.9lf\n", count, publish_time[count]);
 	// printf("I say: [%s]\n", msg->data.c_str());
 	// printf("Time Span:\t%ld.%09ld\n", tp1.tv_sec, tp1.tv_nsec);
 
@@ -152,12 +152,12 @@ int main(int argc, char * argv[])
   // ros::Rate loop_rate(10);
   rclcpp::rate::WallRate loop_rate(PUBLISH_Hz);
   
-  printf("start evaluation *byte \n");
+  printf("start evaluation 256byte \n");
   // while (ros::ok())
   while (rclcpp::ok()) {
-    eval_ros2("./evaluation/byte_data/data_128Kbyte.txt", "./evaluation/publish_time/publish_time_byte.txt", chatter_pub);
+    eval_ros2("./evaluation/byte_data/data_256byte.txt", "./evaluation/publish_time/publish_time_256byte.txt", chatter_pub);
     if(count == -1){
-      printf("end this data size evaluation \n");
+      printf("end this data size evaluation\n");
       break;
     }
     // ros::spinOnce();

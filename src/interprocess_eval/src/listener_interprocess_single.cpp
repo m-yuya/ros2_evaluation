@@ -12,12 +12,12 @@
 #include <sys/mman.h>		// mlock
 #include <sched.h>		// sched
 
-#define EVAL_NUM 120
-#define IS_RELIABLE_QOS 0 // 1 means "reliable"", 0 means "best effort""
+#define EVAL_NUM 1200
+#define IS_RELIABLE_QOS 1 // 1 means "reliable"", 0 means "best effort""
 
-// std::string output_filename = "./evaluation/subscribe_time/subscribe_time_256byte.txt";
+std::string output_filename = "./evaluation/subscribe_time/subscribe_time_256byte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_512byte.txt";
-// std::string output_filename = "./evaluation/subscribe_time/subscribe_time_1Kbyte.txt";
+// std::string output_filename = "./\evaluation/subscribe_time/subscribe_time_1Kbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_2Kbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_4Kbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_8Kbyte.txt";
@@ -28,7 +28,7 @@
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_256Kbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_512Kbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_1Mbyte.txt";
-std::string output_filename = "./evaluation/subscribe_time/subscribe_time_2Mbyte.txt";
+// std::string output_filename = "./evaluation/subscribe_time/subscribe_time_2Mbyte.txt";
 // std::string output_filename = "./evaluation/subscribe_time/subscribe_time_4Mbyte.txt";
 
 static const rmw_qos_profile_t rmw_qos_profile_reliable = {
@@ -77,7 +77,7 @@ void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
 	subscribe_time[count] = (double)tp1.tv_sec + (double)tp1.tv_nsec/ (double)1000000000L;
 
 	// printf("%18.9lf\n",subscribe_time[count]);
-	// printf("subscribe_time[%2d]:\t%18.9lf\n", count,subscribe_time[count]);
+	printf("subscribe_time[%2d]:\t%18.9lf\n", count,subscribe_time[count]);
 
 	// printf("I heard: [%s]\n", receiver.data.c_str());
 	// printf("I heard: [%c]\n",* ( msg->data.c_str()) );

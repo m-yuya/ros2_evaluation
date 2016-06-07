@@ -13,11 +13,11 @@
 #include <sched.h>		// sched
 
 #define EVAL_NUM 120
-#define IS_RELIABLE_QOS 1 // 1 means "reliable"", 0 means "best effort""
+#define QoS_Policy 3 // 1 means "reliable", 0 means "best effort", 3 means "history"
 
 static const rmw_qos_profile_t rmw_qos_profile_reliable = {
   RMW_QOS_POLICY_KEEP_ALL_HISTORY,
-  5,
+  100,
   RMW_QOS_POLICY_RELIABLE,
   RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY
 };
@@ -27,6 +27,13 @@ static const rmw_qos_profile_t rmw_qos_profile_best_effort = {
   1,
   RMW_QOS_POLICY_BEST_EFFORT,
   RMW_QOS_POLICY_VOLATILE_DURABILITY
+};
+
+static const rmw_qos_profile_t rmw_qos_profile_history = {
+  RMW_QOS_POLICY_KEEP_LAST_HISTORY,
+  100,							// depth option for HISTORY
+  RMW_QOS_POLICY_RELIABLE,
+  RMW_QOS_POLICY_TRANSIENT_LOCAL_DURABILITY
 };
 
 int i, count = -1, init_num_int;
@@ -68,12 +75,14 @@ void chatterCallback(const std_msgs::msg::String::SharedPtr msg){
 	subscribe_time[count] = (double)tp1.tv_sec + (double)tp1.tv_nsec/ (double)1000000000L;
 
 	// printf("%18.9lf\n",subscribe_time[count]);
+	// printf("I heard: [%c]\n",* ( msg->data.c_str()) );
+	// printf("I heard: [%s]\n", msg->data.c_str());
+	// printf("Time Span:\t%ld.%09ld\n", tp1.tv_sec, tp1.tv_nsec);
 	// printf("subscribe_time[%2d]:\t%18.9lf\n", count,subscribe_time[count]);
 
-	// printf("I heard: [%s]\n", receiver.data.c_str());
-	// printf("I heard: [%c]\n",* ( msg->data.c_str()) );
-
-	// printf("Time Span:\t%ld.%09ld\n", tp1.tv_sec, tp1.tv_nsec);
+	// char* p = (char *) msg->data.c_str();
+	// p++;
+	// printf("I heard: [%c%c]\n",* ( msg->data.c_str()), *p);
 
 	count++;
 
@@ -168,12 +177,16 @@ int main(int argc, char * argv[])
   //   ros::NodeHandle n;
   auto node = rclcpp::Node::make_shared("listener");
 
-  // QoS Setting
-    rmw_qos_profile_t custom_qos_profile;
-  if( IS_RELIABLE_QOS == 1){
+  // QoS settings
+  rmw_qos_profile_t custom_qos_profile;
+  if( QoS_Policy == 1){
 	custom_qos_profile = rmw_qos_profile_reliable;
-  }else{
+  }
+  else if( QoS_Policy == 2 ){
 	custom_qos_profile = rmw_qos_profile_best_effort;
+  }
+  else if( QoS_Policy == 3){
+	custom_qos_profile = rmw_qos_profile_history;
   }
   
   auto sub = node->create_subscription<std_msgs::msg::String>("chatter", chatterCallback, custom_qos_profile);
